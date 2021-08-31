@@ -9,7 +9,7 @@ function SubscriberStats(subscriber, onStats) {
 }
 
 angular.module('opentok-meet').factory('StatsService', ['$http', '$interval', 'baseURL', 'room',
-  function StatsService($http, $interval/* , baseURL, room */) {
+  function StatsService($http, $interval) {
     let interval;
     const subscribers = {}; // A collection of SubscriberStats objects keyed by subscriber.id
 
@@ -17,7 +17,7 @@ angular.module('opentok-meet').factory('StatsService', ['$http', '$interval', 'b
       const subscriber = subscriberStats.subscriber;
       const lastStats = subscriberStats.lastStats;
       const lastLastStats = subscriberStats.lastLastStats;
-      
+
       subscriber.getStats((err, stats) => {
         if (err) {
           console.error(err);
@@ -159,9 +159,7 @@ angular.module('opentok-meet').directive('subscriberStats', ['OTSession', 'Stats
           subscriber.on('connected', () => {
             subscriberId = subscriber.id;
 
-            console.error('Adding subscriber service to: ', subscriber);
             StatsService.addSubscriber(subscriber, (stats) => {
-              console.error('addSubscriber callback', stats);
               scope.stats = stats;
               scope.$apply();
             });
