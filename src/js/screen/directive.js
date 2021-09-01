@@ -21,15 +21,9 @@ angular.module('opentok-meet').directive('screenShareDialogs', () => ({
     $scope.screenShareSupported = true;
     $scope.screenShareFailed = null;
     $scope.chromeExtensionId = chromeExtensionId;
+    $scope.screenAvailable = true;
+    $scope.screenCanvasAvailable = true;
 
-    $scope.screenPublisherProps = {
-      name: 'screen',
-      style: {
-        nameDisplayMode: 'off',
-      },
-      publishAudio: false,
-      videoSource: 'screen',
-    };
 
     OT.registerScreenSharingExtension('chrome', chromeExtensionId);
 
@@ -45,7 +39,11 @@ angular.module('opentok-meet').directive('screenShareDialogs', () => ({
       if (publisher.id === 'screenPublisher') {
         $scope.$apply(() => {
           $scope.screenShareFailed = error.message;
-          $scope.toggleShareScreen();
+          if ($scope.screenCanvasAvailable) {
+            $scope.toggleShareScreenCanvas();
+          } else {
+            $scope.toggleShareScreen();
+          }
         });
       }
     });
@@ -54,12 +52,45 @@ angular.module('opentok-meet').directive('screenShareDialogs', () => ({
       if (event.targetScope.publisher.id === 'screenPublisher') {
         $scope.$apply(() => {
           $scope.sharingMyScreen = false;
+          $scope.screenAvailable = true;
+          $scope.screenCanvasAvailable = true;
         });
       }
     });
 
     $scope.toggleShareScreen = () => {
+      shareScreen({ videoSource: 'screen' });
+    };
+
+    $scope.toggleShareScreenCanvas = () => {
+      // Hard coded values for testing purposes: HD at 15fps
+      // TODO: param from dialog box
+      const screenProps = {
+        videoSource: 'screenCanvas',
+        screenwidth: 1280,
+        screenheight: 720,
+        framerate: 15
+      }
+      shareScreen(screenProps);
+    };
+
+    const setScreenShareProps = (props) => {
+      $scope.screenPublisherProps = {
+        name: 'screen',
+        style: {
+          nameDisplayMode: 'off',
+        },
+        publishAudio: false,
+      };
+      for([key, val] of Object.entries(props)) {
+        $scope.screenPublisherProps[key] = val;
+      }
+    };
+
+    const shareScreen = (props) => {
       if (!$scope.sharingMyScreen && !$scope.selectingScreenSource) {
+        const isCanvas = props.videoSource === 'screenCanvas';
+        setScreenShareProps(props);
         $scope.selectingScreenSource = true;
         $scope.screenShareFailed = null;
 
@@ -73,11 +104,15 @@ angular.module('opentok-meet').directive('screenShareDialogs', () => ({
           } else {
             $scope.sharingMyScreen = true;
             $scope.selectingScreenSource = false;
+            $scope.screenAvailable = !isCanvas;
+            $scope.screenCanvasAvailable = isCanvas;
           }
           $scope.$apply();
         });
       } else if ($scope.sharingMyScreen) {
         $scope.sharingMyScreen = false;
+        $scope.screenAvailable = true;
+        $scope.screenCanvasAvailable = true;
       }
     };
   }],

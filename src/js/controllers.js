@@ -282,6 +282,7 @@ angular.module('opentok-meet').controller('RoomCtrl', ['$scope', '$http', '$wind
       $scope.p2p = roomData.p2p;
       $scope.room = roomData.room;
       $scope.shareURL = baseURL === '/' ? $window.location.href : baseURL + roomData.room;
+      $scope.isModerator = roomData.role === 'moderator';
 
       OTSession.init(roomData.apiKey, roomData.sessionId, roomData.token, (err, session) => {
         if (err) {
