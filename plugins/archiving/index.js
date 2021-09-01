@@ -1,6 +1,5 @@
 const OpenTok = require('opentok');
 const roomstore = require('../../server/roomstore.js');
-const stylesheet = require('./stylesheet.js')();
 
 module.exports = (app, config, redis, ot) => {
   const RoomStore = roomstore(redis, ot);
@@ -70,8 +69,7 @@ module.exports = (app, config, redis, ot) => {
         name: room,
         resolution: '1280x720',
         layout: {
-          type: 'custom',
-          stylesheet,
+          screenshareType: 'bestfit'
         },
       }, (startErr, archive) => {
         if (startErr) {
