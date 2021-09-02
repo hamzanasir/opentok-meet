@@ -1,7 +1,9 @@
 const request = require('request');
 const jwt = require('jwt-simple');
 
-function Anvil(url) {
+function Anvil(config) {
+  const url = config.apiUrl;
+
   const createJwtToken = (props) => {
     props = props || {};
 
@@ -59,6 +61,61 @@ function Anvil(url) {
       }
 
       done(null, res.body);
+    });
+  };
+
+  this.startWebViewComposer = function startWebViewComposer(body, done) {
+    const uri = `${url}/v2/project/${config.apiKey}/render`;
+
+    const props = {
+      issuer: config.apiKey,
+      secret: config.apiSecret,
+      issuerType: 'project',
+    };
+
+    const headers = generateJwtHeader(props);
+
+    request({
+      method: 'POST',
+      uri,
+      headers,
+      json: true,
+      body,
+    }, (error, response) => {
+      if (response && response.statusCode === 202 && response.body.id) {
+        const riderId = response.body.id;
+        console.log(`Rider created with id: ${riderId}`);
+        done(null, response.body.id);
+      } else {
+        console.log(`Failed to create the rider: ${error}`);
+        done(error)
+      }
+    });
+  };
+
+  this.stopWebViewComposer = function stopWebViewComposer(renderId, done) {
+    const uri = `${url}/v2/project/${config.apiKey}/render/${renderId}`;
+
+    const props = {
+      issuer: config.apiKey,
+      secret: config.apiSecret,
+      issuerType: 'project',
+    };
+
+    const headers = generateJwtHeader(props);
+
+    request({
+      method: 'DELETE',
+      uri,
+      headers,
+      json: true,
+    }, (error, response) => {
+      if (response && response.statusCode === 200) {
+        done();
+      } else {
+        console.log(`Failed to stop the render: ${error}`);
+        done(error)
+      }
     });
   };
 }

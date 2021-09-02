@@ -1,10 +1,9 @@
-const Anvil = require('./anvil');
+const Anvil = require('../anvil');
 const roomstore = require('../../server/roomstore.js');
 
 module.exports = (app, config, redis, ot) => {
   const RoomStore = roomstore(redis, ot);
-  const anvil = new Anvil(config.apiUrl);
-
+  const anvil = new Anvil(config);
 
   app.get('/:room/subscriber/:subscriberId', (req, res) => {
     const room = req.param('room');
