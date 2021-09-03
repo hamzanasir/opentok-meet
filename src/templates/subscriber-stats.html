@@ -23,8 +23,10 @@
     </div>
   </div>
   <div ng-show="stats.info">
-    <label>StreamId</label><span data-for="streamId" class="mono">{{stats.info.streamId}}</span><br />
     <label>Origin server</label> <span data-for="originServer" class="mono">{{stats.info.originServer}}</span><br />
     <label>Edge server</label> <span data-for="edgeServer" class="mono">{{stats.info.edgeServer}}</span><br />
+  </div>
+  <div ng-show="stats.streamId"></div>
+    <label>StreamId</label><span data-for="streamId" class="mono">{{stats.streamId}}</span><br />
   </div>
 </div>

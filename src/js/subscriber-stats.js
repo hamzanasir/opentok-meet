@@ -9,7 +9,7 @@ function SubscriberStats(subscriber, onStats) {
 }
 
 angular.module('opentok-meet').factory('StatsService', ['$http', '$interval', 'baseURL', 'room',
-  function StatsService($http, $interval) {
+  function StatsService($http, $interval, baseURL, room) {
     let interval;
     const subscribers = {}; // A collection of SubscriberStats objects keyed by subscriber.id
 
@@ -63,6 +63,7 @@ angular.module('opentok-meet').factory('StatsService', ['$http', '$interval', 'b
 
         subscriberStats.lastLastStats = subscriberStats.lastStats;
         subscriberStats.lastStats = currStats;
+        subscriberStats.lastStats.streamId = subscriber.streamId;
 
         if (subscriberStats.lastLastStats &&
             subscriberStats.lastLastStats.info) {
@@ -72,7 +73,6 @@ angular.module('opentok-meet').factory('StatsService', ['$http', '$interval', 'b
           subscriberStats.lastStats.info = {
             originServer: info.originServer,
             edgeServer: info.edgeServer,
-            streamId: subscriber.streamId,
           };
         }
 
@@ -88,19 +88,18 @@ angular.module('opentok-meet').factory('StatsService', ['$http', '$interval', 'b
         }
 
         // The below is only executed on the first call to getStats
-        // Commented since it is not need for now
-        // const widgetId = subscriberStats.subscriber.widgetId;
-        // $http.get(`${baseURL + room}/subscriber/${widgetId}`)
-        //   .then((res) => {
-        //     if (res && res.data && res.data.info) {
-        //       currStats.info = res.data.info;
-        //     } else {
-        //       console.info('received error response  ', res);
-        //     }
-        //   })
-        //   .catch((getErr) => {
-        //     console.trace('failed to retrieve susbcriber info ', getErr);
-        //   });
+        const widgetId = subscriberStats.subscriber.widgetId;
+        $http.get(`${baseURL + room}/subscriber/${widgetId}`)
+          .then((res) => {
+            if (res && res.data && res.data.info) {
+              currStats.info = res.data.info;
+            } else {
+              console.info('received error response  ', res);
+            }
+          })
+          .catch((getErr) => {
+            console.trace('failed to retrieve susbcriber info ', getErr);
+          });
 
         // Listen to internal qos events to figure out the audio and video codecs
         const qosHandler = (qos) => {
