@@ -11,7 +11,8 @@ angular.module('opentok-meet-login', [])
     $scope.advanced = false;
     $scope.dtx = false;
     $scope.joinRoom = () => {
-      let url = $window.location.href + encodeURIComponent($scope.room);
+      const location = new URL($window.location.href);
+      let url = `${location.origin}/${encodeURIComponent($scope.room)}`;
 
       if ($scope.roomType !== 'normal') {
         url += `/${$scope.roomType}`;
