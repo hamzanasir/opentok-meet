@@ -1,5 +1,6 @@
 const publisherStatsHTML = require('../templates/publisher-stats.html');
 require('../css/publisher-stats.css');
+const publisherRttWatcher = require('./helpers/publisher-rtt-watcher');
 
 function PublisherStatsDirective(OTSession, $interval) {
   function link(scope) {
@@ -99,8 +100,11 @@ function PublisherStatsDirective(OTSession, $interval) {
       if (newValue === undefined) {
         return;
       }
-
       currentPublisher = newValue;
+      publisherRttWatcher.start(currentPublisher, OTSession.session);
+      currentPublisher.on('streamDestroyed', () => {
+        publisherRttWatcher.stop();
+      });
     });
   }
 

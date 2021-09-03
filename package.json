@@ -25,6 +25,7 @@
     "opentok-angular": "https://github.com/albertoacn/opentok-angular.git#master-screen-canvas",
     "opentok-camera-filters": "^2.0.1",
     "opentok-editor": "^0.3.3",
+    "opentok-solutions-logging": "^1.1.3",
     "opentok-textchat": "^1.2.3",
     "opentok-whiteboard": "^1.2.1",
     "path": "^0.12.7",
