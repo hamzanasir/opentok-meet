@@ -32,6 +32,9 @@ angular.module('opentok-meet').controller('RoomCtrl', ['$scope', '$http', '$wind
     $scope.webviewComposerId = null;
     $scope.startingWebviewComposing = false;
 
+    const url = new URL($window.location.href);
+    const enableDtx = url.searchParams.get('dtx') === 'true';
+
     const facePublisherPropsHD = {
       name: 'face',
       width: '100%',
@@ -39,6 +42,7 @@ angular.module('opentok-meet').controller('RoomCtrl', ['$scope', '$http', '$wind
       style: {
         nameDisplayMode: 'off',
       },
+      enableDtx,
       usePreviousDeviceSelection: true,
       resolution: '1280x720',
       frameRate: 30,
@@ -51,6 +55,7 @@ angular.module('opentok-meet').controller('RoomCtrl', ['$scope', '$http', '$wind
       style: {
         nameDisplayMode: 'off',
       },
+      enableDtx,
       _allowSafariSimulcast: true,
     };
     $scope.facePublisherProps = facePublisherPropsHD;
