@@ -69,7 +69,7 @@ module.exports = (app, config, redis, ot) => {
         name: room,
         resolution: '1280x720',
         layout: {
-          screenshareType: 'bestfit'
+          screenshareType: 'bestfit',
         },
       }, (startErr, archive) => {
         if (startErr) {

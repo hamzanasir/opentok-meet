@@ -83,12 +83,12 @@ function Anvil(config) {
       body,
     }, (error, response) => {
       if (response && response.statusCode === 202 && response.body.id) {
-        const riderId = response.body.id;
-        console.log(`Rider created with id: ${riderId}`);
+        const renderId = response.body.id;
+        console.log(`Render created with id: ${renderId}`);
         done(null, response.body.id);
       } else {
-        console.log(`Failed to create the rider: ${error}`);
-        done(error)
+        console.log(`Failed to create the render: ${error}`);
+        done(error);
       }
     });
   };
@@ -114,7 +114,7 @@ function Anvil(config) {
         done();
       } else {
         console.log(`Failed to stop the render: ${error}`);
-        done(error)
+        done(error);
       }
     });
   };

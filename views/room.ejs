@@ -167,7 +167,7 @@
               Stopping WebView Composer...
             </div>
             <div id="webviewComposingStatus" class="statusMessage" ng-if="webviewComposerId">
-              Webview composing active. Publishing <a href="/{{room}}_wvc?autoPublish=false" target="_blank">here</a>
+              Webview composing active{{ webViewComposerStreamId ? ' with streamId: ' + webViewComposerStreamId : ''}}. Publishing <a href="/{{room}}_wvc?autoPublish=false" target="_blank">here</a>
             </div>
             <screen-share-dialogs></screen-share-dialogs>
             <ot-errors></ot-errors>
