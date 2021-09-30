@@ -65,6 +65,9 @@ function PublisherStatsDirective(OTSession, $interval) {
           prettyStats.subscriberId = key;
           prettyStats.connectionId = statsContainer.connectionId || 'Mantis';
 
+          scope.isP2P = !(key === 'Mantis');
+          scope.mediaMode = scope.isP2P ? 'P2P' : 'Mantis';
+
           if (stats.video) {
             prettyStats.video.frameRate = stats.video.frameRate;
           }
@@ -80,6 +83,9 @@ function PublisherStatsDirective(OTSession, $interval) {
         };
 
         scope.generalStats = generalStats;
+
+        const isAdaptiveMedia = OTSession.session.sessionInfo.isAdaptiveEnabled;
+        scope.adaptiveMediaValue = isAdaptiveMedia ? 'Enabled' : 'Disabled';
       });
     }
 
