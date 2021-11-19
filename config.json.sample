@@ -1,4 +1,5 @@
 {
+    "baseUrl": "http://localhost:3000",
     "port": 3000,
     "apiKey": "Get this and your secret by registering for tokbox.com",
     "apiSecret": "",

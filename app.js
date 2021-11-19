@@ -16,6 +16,7 @@ let config;
 
 if (process.env.HEROKU || process.env.TRAVIS) {
   config = {
+    baseUrl: process.env.BASE_URL,
     port: process.env.PORT,
     apiKey: process.env.OT_API_KEY,
     apiSecret: process.env.OT_API_SECRET,

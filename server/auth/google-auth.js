@@ -1,8 +1,7 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth2').Strategy;
 
-module.exports = config => {
-  console.log('Configg', config);
+module.exports = (config) => {
   passport.serializeUser((user, done) => {
     done(null, user);
   });
@@ -15,11 +14,9 @@ module.exports = config => {
     {
       clientID: config.clientId,
       clientSecret: config.clientSecret,
-      callbackURL: 'http://localhost:3000/google/callback',
+      callbackURL: `${config.baseUrl}/google/callback`,
       passReqToCallback: true,
     },
-    (request, accessToken, refreshToken, profile, done) => {
-      return done(null, profile);
-    }
+    (request, accessToken, refreshToken, profile, done) => done(null, profile)
   ));
 };
