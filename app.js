@@ -7,6 +7,8 @@ const redis = require('redis');
 const url = require('url');
 const glob = require('glob');
 const path = require('path');
+const cookieSession = require('cookie-session');
+const passport = require('passport');
 
 
 const app = express();
@@ -20,6 +22,9 @@ if (process.env.HEROKU || process.env.TRAVIS) {
     chromeExtensionId: process.env.CHROME_EXTENSION_ID,
     apiUrl: process.env.OT_API_URL || 'https://api.dev.opentok.com',
     opentokJs: process.env.OT_JS_URL || 'https://www.dev.tokbox.com/v2/js/opentok.js',
+    clientId: process.env.CLIENT_ID,
+    clientSecret: process.env.CLIENT_SECRET,
+    sessionHash: process.env.SESSION_HASH,
   };
 } else {
   try {
@@ -29,6 +34,8 @@ if (process.env.HEROKU || process.env.TRAVIS) {
     process.exit();
   }
 }
+
+require('./server/auth/google-auth')(config);
 
 let redisClient;
 if (process.env.REDISTOGO_URL) {
@@ -42,8 +49,14 @@ if (process.env.REDISTOGO_URL) {
 }
 
 
+app.use(cookieSession({
+  name: 'meet-session',
+  keys: [config.sessionHash],
+}));
 app.use(compression());
 app.use(express.logger());
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.configure(() => {
   app.set('views', `${__dirname}/views`);

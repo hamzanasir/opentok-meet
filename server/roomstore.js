@@ -13,13 +13,19 @@ module.exports = (redis, ot) => {
       // a different environment
       redis.del('rooms', callback);
     },
-    getRoom(room, apiKey, secret) {
+    updateRoomTimestamp(room, sessionId) {
+      redis.hset('rooms', room, `${sessionId}:${Date.now()}`);
+    },
+    getRoom(room, apiKey, secret, req) {
       console.log(`getRoom: ${room} ${apiKey} ${secret}`);
       const goToRoom = arguments[arguments.length - 1]; // eslint-disable-line
       // Lookup the mapping of rooms to sessionIds
       redis.hget('rooms', room, (err, sid) => {
-        let sessionId = sid;
-        if (!sessionId) {
+        if (!sid) {
+          req.session.redirectUrl = req.originalUrl;
+          if (!req.user) {
+            return goToRoom({ message: 'AUTH-REQUIRED' });
+          }
           const props = {
             mediaMode: 'routed',
           };
@@ -36,9 +42,9 @@ module.exports = (redis, ot) => {
             if (createErr) {
               goToRoom(createErr);
             } else {
-              ({ sessionId } = session);
+              const { sessionId } = session;
               // Store the room to sessionId mapping
-              redis.hset('rooms', room, sessionId, (setErr) => {
+              redis.hset('rooms', room, `${sessionId}:${Date.now()}`, (setErr) => {
                 if (setErr) {
                   console.error('Failed to set room', setErr);
                   goToRoom(setErr);
@@ -65,15 +71,25 @@ module.exports = (redis, ot) => {
             }
           });
         } else {
-          // Lookup if there's a custom apiKey for this room
-          redis.hget('apiKeys', room, (getErr, apiKeySecret) => {
-            if (getErr || !apiKeySecret) {
-              goToRoom(null, sessionId);
-            } else {
-              const parsedApiKeySecret = JSON.parse(apiKeySecret);
-              goToRoom(null, sessionId, parsedApiKeySecret.apiKey, parsedApiKeySecret.secret);
-            }
-          });
+          const sidSplit = sid.split(':');
+          const ts = parseInt(sidSplit[1] || Date.now(), 10);
+          const sessionId = sidSplit[0];
+          if ((Date.now() - ts) > 60000) {
+            console.log('Session expired!');
+            redis.hdel('rooms', room);
+            goToRoom({ message: 'SESSION-EXPIRED' });
+          } else {
+            this.updateRoomTimestamp(room, sessionId);
+            // Lookup if there's a custom apiKey for this room
+            redis.hget('apiKeys', room, (getErr, apiKeySecret) => {
+              if (getErr || !apiKeySecret) {
+                goToRoom(null, sessionId);
+              } else {
+                const parsedApiKeySecret = JSON.parse(apiKeySecret);
+                goToRoom(null, sessionId, parsedApiKeySecret.apiKey, parsedApiKeySecret.secret);
+              }
+            });
+          }
         }
       });
     },

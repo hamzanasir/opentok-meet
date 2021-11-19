@@ -5,5 +5,8 @@
     "phoneNumber": "Number to join a conference by phone",
     "chromeExtensionId": "Get this from https://github.com/opentok/screensharing-extensions",
     "apiUrl": "https://api.dev.opentok.com",
-    "opentokJs": "https://www.dev.tokbox.com/v2/js/opentok.min.js"
+    "opentokJs": "https://www.dev.tokbox.com/v2/js/opentok.min.js",
+    "clientId": "",
+    "clientSecret": "",
+    "sessionHash": "keyboard-cat"
 }
