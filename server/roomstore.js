@@ -71,10 +71,8 @@ module.exports = (redis, ot) => {
             }
           });
         } else {
-          const sidSplit = sid.split(':');
-          const ts = parseInt(sidSplit[1] || Date.now(), 10);
-          const sessionId = sidSplit[0];
-          if ((Date.now() - ts) > 1800000) {
+          const [sessionId, ts] = sid.split(':');
+          if ((Date.now() - parseInt(ts || Date.now(), 10)) > 1800000) {
             redis.hdel('rooms', room);
             goToRoom({ message: 'SESSION-EXPIRED' });
           } else {
