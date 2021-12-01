@@ -20,7 +20,7 @@ module.exports = (app, config, redis, ot, redirectSSL) => {
   app.get(
     '/google/callback',
     passport.authenticate('google', {
-      failureRedirect: '/failed',
+      failureRedirect: '/login',
     }),
     (req, res) => {
       const redirectUrl = req.session.redirectUrl || '/';
