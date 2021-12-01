@@ -9,6 +9,7 @@ const glob = require('glob');
 const path = require('path');
 const cookieSession = require('cookie-session');
 const passport = require('passport');
+const initGoogleAuth = require('./server/auth/google-auth');
 
 
 const app = express();
@@ -36,7 +37,7 @@ if (process.env.HEROKU || process.env.TRAVIS) {
   }
 }
 
-require('./server/auth/google-auth')(config);
+initGoogleAuth(config);
 
 let redisClient;
 if (process.env.REDISTOGO_URL) {
