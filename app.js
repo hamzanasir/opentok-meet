@@ -37,7 +37,9 @@ if (process.env.HEROKU || process.env.TRAVIS) {
   }
 }
 
-initGoogleAuth(config);
+if (config.clientId) {
+  initGoogleAuth(config);
+}
 
 let redisClient;
 if (process.env.REDISTOGO_URL) {

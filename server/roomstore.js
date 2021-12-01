@@ -16,15 +16,17 @@ module.exports = (redis, ot) => {
     updateRoomTimestamp(room, sessionId) {
       redis.hset('rooms', room, `${sessionId}:${Date.now()}`);
     },
-    getRoom(room, apiKey, secret, req) {
+    getRoom(room, apiKey, secret, req, config) {
       console.log(`getRoom: ${room} ${apiKey} ${secret}`);
       const goToRoom = arguments[arguments.length - 1]; // eslint-disable-line
       // Lookup the mapping of rooms to sessionIds
       redis.hget('rooms', room, (err, sid) => {
         if (!sid) {
-          req.session.redirectUrl = req.originalUrl;
-          if (!req.user) {
-            return goToRoom({ message: 'AUTH-REQUIRED' });
+          if (config.clientId) {
+            req.session.redirectUrl = req.originalUrl;
+            if (!req.user) {
+              return goToRoom({ message: 'AUTH-REQUIRED' });
+            }
           }
           const props = {
             mediaMode: 'routed',

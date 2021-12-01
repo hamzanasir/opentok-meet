@@ -8,7 +8,7 @@ module.exports = (app, config, redis, ot, redirectSSL) => {
 
   const isAuthenticated = (req, res, next) => {
     req.session.redirectUrl = req.originalUrl;
-    if (req.user) {
+    if (req.user || !config.clientId) {
       next();
     } else {
       res.redirect('/login');
@@ -95,7 +95,7 @@ module.exports = (app, config, redis, ot, redirectSSL) => {
             });
           }
         };
-        RoomStore.getRoom(room, apiKey, secret, req, goToRoom);
+        RoomStore.getRoom(room, apiKey, secret, req, config, goToRoom);
       },
       html() {
         res.render('room', {
