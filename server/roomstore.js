@@ -1,5 +1,7 @@
 const OpenTok = require('opentok');
 
+const ROOM_INACTIVITY_TIME_LIMIT = 30 * 60 * 1000; // 30 minutes; minutes x seconds x milliseconds
+
 module.exports = (redis, ot) => {
   const roomStore = {
     isP2P(room) {
@@ -20,8 +22,8 @@ module.exports = (redis, ot) => {
       console.log(`getRoom: ${room} ${apiKey} ${secret}`);
       const goToRoom = arguments[arguments.length - 1]; // eslint-disable-line
       // Lookup the mapping of rooms to sessionIds
-      redis.hget('rooms', room, (err, sid) => {
-        if (!sid) {
+      redis.hget('rooms', room, (err, sidWithTs) => {
+        if (!sidWithTs) {
           if (config.clientId) {
             req.session.redirectUrl = req.originalUrl;
             if (!req.user) {
@@ -73,8 +75,8 @@ module.exports = (redis, ot) => {
             }
           });
         } else {
-          const [sessionId, ts] = sid.split(':');
-          if ((Date.now() - parseInt(ts || Date.now(), 10)) > 1800000) {
+          const [sessionId, timestamp] = sidWithTs.split(':');
+          if ((Date.now() - parseInt(timestamp || Date.now(), 10)) > ROOM_INACTIVITY_TIME_LIMIT) {
             redis.hdel('rooms', room);
             goToRoom({ message: 'SESSION-EXPIRED' });
           } else {
