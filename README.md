@@ -24,6 +24,17 @@ If you push to the master branch of this repo [Travis](https://travis-ci.org/ope
 
 - Copy the contents of `config.json.sample` into `config.json` and add your credentials.
   :warning: Note: the default config points to VAPID. If you intend to use a production api key you must change `apiUrl` and `opentokJs` to point to production endpoints.
+- ### Google Auth
+  - You can optionally setup google auth with this project if you provide a client Id and client secret.
+    - Login to Google Cloud Platform and go to https://console.cloud.google.com/apis/credentials
+    - From here go to 
+    Credentials --> "Create Credentials" --> OAuth Client ID
+
+    - (a) Application Type --> Web Application
+      (b) Name --> <whatever you want> eg. Web App 3
+      (c) Authorized redirect URIs --> Add URI --> "http://localhost:3000/google/callback" ---> click on "CREATE"
+
+    - You will now get your client Id and secret that you can replace in the config file.
 
 - Ensure redis is running (e.g. `redis-server` on mac)
 

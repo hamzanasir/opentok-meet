@@ -371,6 +371,13 @@ angular.module('opentok-meet').controller('RoomCtrl', ['$scope', '$http', '$wind
 
     // Fetch the room info
     RoomService.getRoom().then((roomData) => {
+      if (roomData.error === 'AUTH-REQUIRED') {
+        $window.location.href = '/login';
+      }
+      if (roomData.error === 'SESSION-EXPIRED') {
+        $window.location.reload();
+      }
+
       if ($scope.session) {
         $scope.session.disconnect();
       }

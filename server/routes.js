@@ -1,9 +1,33 @@
 const OpenTok = require('opentok');
+const passport = require('passport');
 const roomstore = require('./roomstore.js');
 const isValidTokenRole = require('../src/js/isValidTokenRole');
 
 module.exports = (app, config, redis, ot, redirectSSL) => {
   const RoomStore = roomstore(redis, ot);
+
+  const isAuthenticated = (req, res, next) => {
+    req.session.redirectUrl = req.originalUrl;
+    if (req.user || !config.clientId) {
+      next();
+    } else {
+      res.redirect('/login');
+    }
+  };
+
+  app.get('/login', passport.authenticate('google', { scope: ['email', 'profile'] }));
+
+  app.get(
+    '/google/callback',
+    passport.authenticate('google', {
+      failureRedirect: '/login',
+    }),
+    (req, res) => {
+      const redirectUrl = req.session.redirectUrl || '/';
+      res.redirect(redirectUrl);
+    }
+  );
+
   app.get('*', (req, res, next) => {
     if (req.host === 'hangout.tokbox.com') {
       res.redirect(`https://meet.tokbox.com${req.url}`);
@@ -15,13 +39,13 @@ module.exports = (app, config, redis, ot, redirectSSL) => {
     }
   });
 
-  app.get('/rooms', (req, res) => {
+  app.get('/rooms', isAuthenticated, (req, res) => {
     RoomStore.getRooms((err, rooms) => {
       res.send(rooms);
     });
   });
 
-  app.delete('/rooms', (req, res) => {
+  app.delete('/rooms', isAuthenticated, (req, res) => {
     RoomStore.clearRooms((err) => {
       if (err) {
         res.send(err);
@@ -71,7 +95,7 @@ module.exports = (app, config, redis, ot, redirectSSL) => {
             });
           }
         };
-        RoomStore.getRoom(room, apiKey, secret, goToRoom);
+        RoomStore.getRoom(room, apiKey, secret, req, config, goToRoom);
       },
       html() {
         res.render('room', {
@@ -84,7 +108,7 @@ module.exports = (app, config, redis, ot, redirectSSL) => {
     });
   });
 
-  app.get('/', (req, res) => {
+  app.get('/', isAuthenticated, (req, res) => {
     res.render('index.ejs');
   });
 
