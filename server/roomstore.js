@@ -76,7 +76,7 @@ module.exports = (redis, ot) => {
           });
         } else {
           const [sessionId, timestamp] = sidWithTs.split(':');
-          if ((Date.now() - parseInt(timestamp || Date.now(), 10)) > ROOM_INACTIVITY_TIME_LIMIT) {
+          if (timestamp && Date.now() - parseInt(timestamp, 10) > ROOM_INACTIVITY_TIME_LIMIT) {
             redis.hdel('rooms', room);
             goToRoom({ message: 'SESSION-EXPIRED' });
           } else {
