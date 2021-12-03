@@ -2,7 +2,7 @@ const OpenTok = require('opentok');
 const roomstore = require('../../server/roomstore.js');
 
 module.exports = (app, config, redis, ot) => {
-  const RoomStore = roomstore(redis, ot);
+  const RoomStore = roomstore(redis, ot, config);
 
   // Keeping this around for legacy URLs. The new URL format for
   // archives is /:room/archive/:archiveId though

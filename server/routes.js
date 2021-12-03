@@ -4,7 +4,7 @@ const roomstore = require('./roomstore.js');
 const isValidTokenRole = require('../src/js/isValidTokenRole');
 
 module.exports = (app, config, redis, ot, redirectSSL) => {
-  const RoomStore = roomstore(redis, ot);
+  const RoomStore = roomstore(redis, ot, config);
 
   const isAuthenticated = (req, res, next) => {
     req.session.redirectUrl = req.originalUrl;
@@ -95,7 +95,7 @@ module.exports = (app, config, redis, ot, redirectSSL) => {
             });
           }
         };
-        RoomStore.getRoom(room, apiKey, secret, req, config, goToRoom);
+        RoomStore.getRoom(room, apiKey, secret, req, goToRoom);
       },
       html() {
         res.render('room', {

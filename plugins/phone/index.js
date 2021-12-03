@@ -1,7 +1,7 @@
 const roomstore = require('../../server/roomstore.js');
 
 module.exports = (app, config, redis, ot) => {
-  const RoomStore = roomstore(redis, ot);
+  const RoomStore = roomstore(redis, ot, config);
 
   function createPinCode(room, callback) {
     const max = 99999;
