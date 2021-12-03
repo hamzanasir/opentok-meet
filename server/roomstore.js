@@ -2,7 +2,7 @@ const OpenTok = require('opentok');
 
 const ROOM_INACTIVITY_TIME_LIMIT = 30 * 60 * 1000; // 30 minutes; minutes x seconds x milliseconds
 
-module.exports = (redis, ot) => {
+module.exports = (redis, ot, config) => {
   const roomStore = {
     isP2P(room) {
       return room.toLowerCase().indexOf('p2p') >= 0;
@@ -18,7 +18,7 @@ module.exports = (redis, ot) => {
     updateRoomTimestamp(room, sessionId) {
       redis.hset('rooms', room, `${sessionId}:${Date.now()}`);
     },
-    getRoom(room, apiKey, secret, req, config) {
+    getRoom(room, apiKey, secret, req) {
       console.log(`getRoom: ${room} ${apiKey} ${secret}`);
       const goToRoom = arguments[arguments.length - 1]; // eslint-disable-line
       // Lookup the mapping of rooms to sessionIds
