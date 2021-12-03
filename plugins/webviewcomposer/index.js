@@ -3,7 +3,7 @@ const roomstore = require('../../server/roomstore.js');
 
 module.exports = (app, config, redis, ot) => {
   const anvil = new Anvil(config);
-  const RoomStore = roomstore(redis, ot);
+  const RoomStore = roomstore(redis, ot, config);
 
   app.post('/:room/start-web-view-composing', (req, res) => {
     const body = {
