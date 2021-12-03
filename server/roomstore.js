@@ -18,7 +18,7 @@ module.exports = (redis, ot, config) => {
     updateRoomTimestamp(room, sessionId) {
       redis.hset('rooms', room, `${sessionId}:${Date.now()}`);
     },
-    getRoom(room, apiKey, secret, req) {
+    getRoom(room, apiKey, secret, req = { session: {} }) {
       console.log(`getRoom: ${room} ${apiKey} ${secret}`);
       const goToRoom = arguments[arguments.length - 1]; // eslint-disable-line
       // Lookup the mapping of rooms to sessionIds
